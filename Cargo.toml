@@ -20,8 +20,6 @@ libc = "0.2"
 tokio = {version = "0.2", features=["io-util"], optional=true}
 
 [features]
-default=["full", "async"]
-
 async = ["tokio"]
 
 # Actual things

@@ -22,5 +22,3 @@ where V: AsMut<[T]>,
     }
     i
 }
-
-pub use super::bytes;

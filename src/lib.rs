@@ -1,11 +1,13 @@
 #![allow(dead_code)]
 
-mod consts;
+pub mod consts;
+#[allow(unused_imports)]
 use consts::*;
 
 pub mod util;
 pub mod bytes;
 
+#[allow(unused_imports)]
 mod error;
 
 // Actual things
@@ -18,3 +20,6 @@ pub mod password;
 pub mod aes;
 #[cfg(feature="checksum")]
 pub mod crc;
+
+#[cfg(feature="rsa")]
+pub mod rsa;

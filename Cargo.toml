@@ -27,13 +27,15 @@ full = [
      "sha256",
      "password",
      "aes",
-     "checksum"
+     "checksum",
+     "rsa"
 ]
 
 sha256 = ["sha2"]
 password = ["sha256", "pbkdf2", "hex-literal", "hmac", "getrandom"]
 aes = ["openssl", "getrandom"]
 checksum = ["crc"]
+rsa = ["openssl", "password"]
 
 [build-dependencies]
 rustc_version = "0.2"

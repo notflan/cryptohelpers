@@ -46,3 +46,27 @@ pub fn refer_mut<T: ?Sized>(value: &mut T) -> &mut [u8]
 	slice::from_raw_parts_mut(value as *mut T as *mut u8, mem::size_of_val(value))
     }
 }
+
+/// Get a type from its bytes
+///
+/// # Notes
+/// This function omits bounds checks in production builds
+pub fn derefer<T>(bytes: &[u8]) -> &T
+{
+    #[cfg(debug_assertions)] assert!(bytes.len() >= mem::size_of::<T>(), "not enough bytes ");
+    unsafe {
+	&*(&bytes[0] as *const u8 as *const T)
+    }
+}
+
+/// Get a mutable reference to a type from its bytes
+///
+/// # Notes
+/// This function omits bounds checks in production builds
+pub fn derefer_mut<T>(bytes: &mut [u8]) -> &mut T
+{
+    #[cfg(debug_assertions)] assert!(bytes.len() >= mem::size_of::<T>(), "not enough bytes ");
+    unsafe {
+	&mut *(&mut bytes[0] as *mut u8 as *mut T)
+    }
+}

@@ -56,6 +56,11 @@ pub struct RsaPublicKey
 
 impl RsaPublicKey
 {
+    /// Generate a new RSA public key (kinda useless, use `RsaPrivateKey::generate()`).
+    pub fn generate() -> Result<Self, Error>
+    {
+	Ok(Rsa::generate(RSA_KEY_BITS)?.into())
+    }
     /// Create a new RSAPublicKey from components
     pub fn new(
 	n: impl Borrow<BigNumRef>,

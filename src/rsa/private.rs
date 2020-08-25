@@ -60,6 +60,12 @@ pub struct RsaPrivateKey
 
 impl RsaPrivateKey
 {
+    /// Generate a new RSA private key
+    pub fn generate() -> Result<Self, Error>
+    {
+	Ok(Rsa::generate(RSA_KEY_BITS)?.into())
+    }
+    
     /// Create a new private key from its components
     pub fn new(
 	n: impl Borrow<BigNumRef>,

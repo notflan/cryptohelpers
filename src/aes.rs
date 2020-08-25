@@ -38,8 +38,8 @@ pub struct AesKey {
 
 impl AesKey
 {
-    /// Generate a new random AES key and IV.
-    pub fn random() -> Result<Self, Error>
+    /// Generate a new AES key and IV.
+    pub fn generate() -> Result<Self, Error>
     {
 	let mut this = Self::default();
 
@@ -47,6 +47,14 @@ impl AesKey
 	getrandom(&mut this.iv[..])?;
 
 	Ok(this)
+    }
+    /// Generate a new random AES key and IV.
+    ///
+    /// # Deprecated
+    /// Use `AesKey::generate()` instead.
+    #[deprecated] #[inline]  pub fn random() -> Result<Self, Error>
+    {
+	Self::generate()
     }
 
     /// Create a new instance from a key and IV

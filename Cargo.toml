@@ -1,6 +1,6 @@
 [package]
 name = "cryptohelpers"
-version = "0.1.0"
+version = "0.1.1"
 license= "MIT"
 description = "Collection of helpers and simplifying functions for cryptography things"
 authors = ["Avril <flanchan@cumallover.me>"]
@@ -36,6 +36,3 @@ password = ["sha256", "pbkdf2", "hex-literal", "hmac", "getrandom"]
 aes = ["openssl", "getrandom"]
 checksum = ["crc"]
 rsa = ["openssl", "password"]
-
-[build-dependencies]
-rustc_version = "0.2"

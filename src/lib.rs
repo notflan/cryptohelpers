@@ -24,7 +24,7 @@ mod bytes;
 #[allow(unused_imports)]
 mod error;
 
-#[cfg(feature="serde")]
+#[cfg(feature="serialise")]
 use serde_derive::{
     Serialize, Deserialize,
 };

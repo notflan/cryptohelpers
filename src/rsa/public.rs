@@ -129,7 +129,7 @@ impl RsaPublicKey
 	    return Err(Error::Binary(BinaryErrorKind::Length{expected: Some(size_of::<PublicOffsetGroup>()), got: Some(bytes.len())}));
 	}
 
-	let offset: &PublicOffsetGroup = bytes::derefer(&bytes[..size_of::<PublicOffsetGroup>()]);
+	let offset: &PublicOffsetGroup = unsafe {bytes::derefer_unchecked(&bytes[..size_of::<PublicOffsetGroup>()])};
 	let bytes = &bytes[size_of::<PublicOffsetGroup>()..];
 
 	let sz = offset.body_len();
@@ -190,7 +190,7 @@ impl RsaPublicKey
 	    if buffer.len() != from.read_exact(&mut buffer[..]).await? {
 		return Err(io::Error::new(io::ErrorKind::UnexpectedEof, "couldn't read offsets"));
 	    } else {
-		*bytes::derefer(&buffer[..])
+		*unsafe{bytes::derefer_unchecked(&buffer[..])}
 	    }
 	};
 
@@ -215,7 +215,7 @@ impl RsaPublicKey
 	    let mut buffer = [0u8; size_of::<PublicOffsetGroup>()];
 
 	    from.read_exact(&mut buffer[..])?;
-	    *bytes::derefer(&buffer[..])
+	    *unsafe{bytes::derefer_unchecked(&buffer[..])}
 	};
 
 	let mut data = vec![0u8; offset.body_len()];

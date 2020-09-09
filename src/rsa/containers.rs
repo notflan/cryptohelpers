@@ -26,7 +26,7 @@ pub trait PublicKey
     fn get_pkey_pub(&self) -> Result<Cow<'_, PKey<Self::KeyType>>, Self::Error>;
 
     /// Get or create an `Rsa` from this public key if possible
-    fn get_rsa_pub(&self) -> Result<Option<Cow<'_, Rsa<Self::KeyType>>>, Self::Error>
+    #[inline] fn get_rsa_pub(&self) -> Result<Option<Cow<'_, Rsa<Self::KeyType>>>, Self::Error>
     {
 	Ok(self.get_pkey_pub()?.rsa().ok().map(|x| Cow::Owned(x)))
     }

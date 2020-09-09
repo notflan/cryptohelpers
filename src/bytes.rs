@@ -51,9 +51,26 @@ pub fn refer_mut<T: ?Sized>(value: &mut T) -> &mut [u8]
 ///
 /// # Notes
 /// This function omits bounds checks in production builds
-pub fn derefer<T>(bytes: &[u8]) -> &T
+pub unsafe fn derefer_unchecked<T>(bytes: &[u8]) -> &T
 {
     #[cfg(debug_assertions)] assert!(bytes.len() >= mem::size_of::<T>(), "not enough bytes ");
+    &*(&bytes[0] as *const u8 as *const T)
+}
+
+/// Get a mutable reference to a type from its bytes
+///
+/// # Notes
+/// This function omits bounds checks in production builds
+pub unsafe fn derefer_unchecked_mut<T>(bytes: &mut [u8]) -> &mut T
+{
+    #[cfg(debug_assertions)] assert!(bytes.len() >= mem::size_of::<T>(), "not enough bytes ");
+    &mut *(&mut bytes[0] as *mut u8 as *mut T)
+}
+
+/// Get a type from its bytes
+pub fn derefer<T>(bytes: &[u8]) -> &T
+{
+    assert!(bytes.len() >= mem::size_of::<T>(), "not enough bytes ");
     unsafe {
 	&*(&bytes[0] as *const u8 as *const T)
     }
@@ -65,7 +82,7 @@ pub fn derefer<T>(bytes: &[u8]) -> &T
 /// This function omits bounds checks in production builds
 pub fn derefer_mut<T>(bytes: &mut [u8]) -> &mut T
 {
-    #[cfg(debug_assertions)] assert!(bytes.len() >= mem::size_of::<T>(), "not enough bytes ");
+    assert!(bytes.len() >= mem::size_of::<T>(), "not enough bytes ");
     unsafe {
 	&mut *(&mut bytes[0] as *mut u8 as *mut T)
     }

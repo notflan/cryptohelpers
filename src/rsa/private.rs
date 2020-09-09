@@ -188,7 +188,7 @@ impl RsaPrivateKey
 	    return Err(Error::Binary(BinaryErrorKind::Length{expected: Some(OFF_SIZE), got: Some(bytes.len())}));
 	}
 
-	let offset: &PrivateOffsetGroup = bytes::derefer(&bytes[..OFF_SIZE]);
+	let offset: &PrivateOffsetGroup = unsafe{bytes::derefer_unchecked(&bytes[..OFF_SIZE])};
 	let bytes = &bytes[OFF_SIZE..];
 	let sz = offset.body_len();
 
@@ -250,7 +250,7 @@ impl RsaPrivateKey
 	    if buffer.len() != from.read_exact(&mut buffer[..]).await? {
 		return Err(io::Error::new(io::ErrorKind::UnexpectedEof, "couldn't read offsets"));
 	    } else {
-		*bytes::derefer(&buffer[..])
+		*unsafe{bytes::derefer_unchecked(&buffer[..])}
 	    }
 	};
 
@@ -275,7 +275,7 @@ impl RsaPrivateKey
 	    let mut buffer = [0u8; size_of::<PrivateOffsetGroup>()];
 
 	    from.read_exact(&mut buffer[..])?;
-	    *bytes::derefer(&buffer[..])
+	    *unsafe{bytes::derefer_unchecked(&buffer[..])}
 	};
 
 	let mut data = vec![0u8; offset.body_len()];

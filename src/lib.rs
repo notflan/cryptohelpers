@@ -24,6 +24,11 @@ mod bytes;
 #[allow(unused_imports)]
 mod error;
 
+#[cfg(feature="serde")]
+use serde_derive::{
+    Serialize, Deserialize,
+};
+
 // Actual things
 
 #[cfg(feature="sha256")] 

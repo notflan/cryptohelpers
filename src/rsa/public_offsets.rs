@@ -1,7 +1,6 @@
 //! Offsets for a public key container
 use super::offsets::*;
 
-#[repr(C, packed)]
 #[derive(Clone,Copy,Debug,Eq,PartialEq,Hash,Default)]
 pub struct PublicOffsetGroup
 {

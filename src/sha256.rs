@@ -19,9 +19,8 @@ const SIZE: usize = consts::SHA256_SIZE;
 
 /// Represents a SHA256 hash
 #[derive(Clone, Copy, Default, PartialEq, Eq, Hash, Debug)]
-#[repr(C, packed)]
+#[repr(transparent)]
 #[cfg_attr(feature="serialise", derive(Serialize,Deserialize))]
-
 pub struct Sha256Hash
 {
     hash: [u8; SIZE],

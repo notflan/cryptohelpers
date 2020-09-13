@@ -188,7 +188,10 @@ impl RsaPrivateKey
 	    return Err(Error::Binary(BinaryErrorKind::Length{expected: Some(OFF_SIZE), got: Some(bytes.len())}));
 	}
 
-	let offset: &PrivateOffsetGroup = unsafe{bytes::derefer_unchecked(&bytes[..OFF_SIZE])};
+	let offset = unsafe{
+	    bytes::derefer_unchecked::<PrivateOffsetGroup>(&bytes[..OFF_SIZE])
+		.read_unaligned()
+	};
 	let bytes = &bytes[OFF_SIZE..];
 	let sz = offset.body_len();
 
@@ -199,7 +202,7 @@ impl RsaPrivateKey
 	Ok(Self{
 	    data: Vec::from(&bytes[..]),
 	    offset_starts: offset.starts(),
-	    offset: *offset,
+	    offset,
 	})
     }
     
@@ -245,12 +248,20 @@ impl RsaPrivateKey
 	const OFF_SIZE: usize = size_of::<PrivateOffsetGroup>();
 	
 	let offset: PrivateOffsetGroup = {
-	    let mut buffer = [0u8; OFF_SIZE];
+	    union BufHack {
+		buffer: [u8; OFF_SIZE],
+		res: PrivateOffsetGroup,
+	    }
+	    let mut offsets = BufHack{buffer: [0u8; OFF_SIZE]};
+	    unsafe {
+		let buffer = &mut offsets.buffer;
 
-	    if buffer.len() != from.read_exact(&mut buffer[..]).await? {
-		return Err(io::Error::new(io::ErrorKind::UnexpectedEof, "couldn't read offsets"));
-	    } else {
-		*unsafe{bytes::derefer_unchecked(&buffer[..])}
+		if buffer.len() != from.read_exact(&mut buffer[..]).await? {
+		    return Err(io::Error::new(io::ErrorKind::UnexpectedEof, "couldn't read offsets"));
+		}
+	    }
+	    unsafe{
+		offsets.res
 	    }
 	};
 
@@ -271,11 +282,21 @@ impl RsaPrivateKey
     pub fn read_from_sync<T>(&self, from: &mut T) -> io::Result<Self>
     where T: Read + ?Sized
     {
+	const OFF_SIZE: usize = size_of::<PrivateOffsetGroup>();
+	
 	let offset: PrivateOffsetGroup = {
-	    let mut buffer = [0u8; size_of::<PrivateOffsetGroup>()];
-
-	    from.read_exact(&mut buffer[..])?;
-	    *unsafe{bytes::derefer_unchecked(&buffer[..])}
+	    union BufHack {
+		buffer: [u8; OFF_SIZE],
+		res: PrivateOffsetGroup,
+	    }
+	    let mut offsets = BufHack{buffer: [0u8; OFF_SIZE]};
+	    unsafe {
+		let buffer = &mut offsets.buffer;
+		from.read_exact(&mut buffer[..])?;
+	    }
+	    unsafe {
+		offsets.res
+	    }
 	};
 
 	let mut data = vec![0u8; offset.body_len()];

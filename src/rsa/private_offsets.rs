@@ -1,7 +1,6 @@
 //! Private offsets
 use super::offsets::*;
 
-#[repr(C, packed)]
 #[derive(Clone,Copy,Debug,Eq,PartialEq,Hash,Default)]
 pub struct PrivateOffsetGroup
 {

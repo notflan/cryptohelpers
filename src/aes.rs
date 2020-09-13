@@ -30,7 +30,6 @@ const BLOCKSIZE: usize = 16;
 
 /// A key and IV for the AES algorithm
 #[derive(Debug, PartialEq, Eq, Clone, Hash, Default)]
-#[repr(C, packed)]
 pub struct AesKey {
     key: [u8; KEYSIZE],
     iv: [u8; IVSIZE],

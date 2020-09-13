@@ -19,7 +19,7 @@ pub const ROUNDS: u32 = consts::PASSWORD_ROUNDS;
 
 /// Represents a password hash
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Default)]
-#[repr(C, packed)]
+#[repr(transparent)]
 pub struct Password {
     derived: [u8; KEYSIZE],
 }

@@ -38,6 +38,7 @@ use consts::BUFFER_SIZE;
 
 /// Represents an RSA signature
 #[derive(Copy, Clone)]
+#[repr(transparent)]
 pub struct Signature([u8; SIZE]);
 
 impl Signature

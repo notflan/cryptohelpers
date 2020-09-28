@@ -15,7 +15,7 @@ use tokio::{
     prelude::*,
 };
 
-const SIZE: usize = consts::SHA256_SIZE;
+pub const SIZE: usize = consts::SHA256_SIZE;
 
 /// Represents a SHA256 hash
 #[derive(Clone, Copy, Default, PartialEq, Eq, Hash, Debug)]
@@ -32,6 +32,18 @@ impl Sha256Hash
     pub const fn empty() -> Self
     {
 	Self { hash: [0u8; SIZE] }
+    }
+
+    /// Create a SHA256 instance from these bytes
+    #[inline] pub const fn from_bytes(hash: [u8; SIZE]) -> Self
+    {
+        Self { hash }   
+    }
+
+    /// Consume this instance into bytes
+    #[inline] pub const fn into_bytes(self) -> [u8; SIZE]
+    {
+        self.hash
     }
 
     /// Reads the rest of the stream, and computes SHA256 hash into the current instance. Returning the number of bytes read.
@@ -153,5 +165,21 @@ impl AsMut<[u8]> for Sha256Hash
     fn as_mut(&mut self) -> &mut [u8]
     {
 	&mut self.hash[..]
+    }
+}
+
+impl From<[u8; SIZE]> for Sha256Hash
+{
+    #[inline] fn from(hash: [u8; SIZE]) -> Self
+    {
+	Self { hash }
+    }
+}
+
+impl From<Sha256Hash> for [u8; SIZE]
+{
+    #[inline] fn from(from: Sha256Hash) -> Self
+    {
+	from.hash
     }
 }

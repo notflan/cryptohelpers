@@ -1,6 +1,6 @@
 [package]
 name = "cryptohelpers"
-version = "1.1.2"
+version = "1.2.0"
 license= "MIT"
 description = "Collection of helpers and simplifying functions for cryptography things"
 authors = ["Avril <flanchan@cumallover.me>"]

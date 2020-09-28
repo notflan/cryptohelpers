@@ -26,7 +26,7 @@ pub struct Password {
 
 /// Represents a salt to be used for password operations
 #[derive(Clone, PartialEq, Eq, Hash, Debug)]
-#[repr(C, packed)]
+#[repr(transparent)]
 pub struct Salt([u8; SALTSIZE]);
 
 impl Default for Salt

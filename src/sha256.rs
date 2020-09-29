@@ -183,3 +183,12 @@ impl From<Sha256Hash> for [u8; SIZE]
 	from.hash
     }
 }
+
+#[cfg(feature="password")] 
+impl From<Sha256Hash> for password::Password
+{
+    #[inline] fn from(from: Sha256Hash) -> Self
+    {
+	Self::from_bytes(from.hash)
+    }
+}

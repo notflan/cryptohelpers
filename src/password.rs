@@ -18,7 +18,7 @@ pub const KEYSIZE: usize = consts::PASSWORD_KEYSIZE;
 pub const ROUNDS: u32 = consts::PASSWORD_ROUNDS;
 
 /// Represents a password hash
-#[derive(Clone, Copy, PartialEq, Eq, Hash, Default)]
+#[derive(Clone, Debug, PartialEq, Eq, Hash, Default)]
 #[repr(transparent)]
 pub struct Password {
     derived: [u8; KEYSIZE],
@@ -82,6 +82,7 @@ impl Salt
     {
 	Self([0u8; SALTSIZE])
     }
+
 }
 
 impl From<[u8; SALTSIZE]> for Salt
@@ -119,6 +120,31 @@ impl AsMut<[u8]> for Salt
 
 impl Password
 {
+    /// Create from a specific hash
+    #[inline] pub const fn from_bytes(derived: [u8; KEYSIZE]) -> Self
+    {
+	Self { derived }
+    }
+
+    /// Consume into the hash bytes
+    #[inline] 
+    pub const fn into_bytes(self) -> [u8; KEYSIZE]
+    {
+	self.derived
+    }
+    
+    /// Create an empty password hash container
+    #[inline(always)] pub const fn empty() -> Self
+    {
+	Self{derived: [0u8; KEYSIZE]}
+    }
+    
+    /// Create an AES key from this password hash
+    #[cfg(feature="aes")] 
+    #[inline] pub fn create_aes(&self) -> aes::AesKey
+    {
+	aes::AesKey::from_slice(&self.derived[..consts::AES_KEYSIZE], &self.derived[consts::AES_KEYSIZE..]).unwrap()
+    }
     /// Validate this password.
     pub fn validate(&self, string: impl AsRef<str>, salt: &Salt) -> bool
     {
@@ -163,5 +189,36 @@ impl fmt::Display for Password
 	Ok(())
     }
 }
+
+#[cfg(feature="aes")]
+impl From<Password> for aes::AesKey
+{
+    #[inline] fn from(from: Password) -> Self
+    {
+	unsafe {
+	    std::mem::transmute(from)
+	}
+    }
+}
+
+#[cfg(test)]
+mod tests
+{
+    use super::*;
+    #[test]
+    #[cfg(feature="aes")] 
+    fn transmute_safe()
+    {
+	assert_eq!(std::mem::size_of::<Password>(), std::mem::size_of::<aes::AesKey>());
+	assert_eq!(std::mem::align_of::<Password>(), std::mem::align_of::<aes::AesKey>());
+
+	let passwd = Password::derive("hello world", &Default::default());
+	let naes = passwd.create_aes();
+	let aes: aes::AesKey = passwd.into();
+
+	assert_eq!(aes, naes);
+    }
+}
+
 
 pub use crate::error::password::Error;

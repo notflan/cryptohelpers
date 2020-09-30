@@ -20,6 +20,7 @@ pub const ROUNDS: u32 = consts::PASSWORD_ROUNDS;
 /// Represents a password hash
 #[derive(Clone, Debug, PartialEq, Eq, Hash, Default)]
 #[repr(transparent)]
+#[cfg_attr(feature="serialise", derive(Serialize,Deserialize))]
 pub struct Password {
     derived: [u8; KEYSIZE],
 }
@@ -27,6 +28,7 @@ pub struct Password {
 /// Represents a salt to be used for password operations
 #[derive(Clone, PartialEq, Eq, Hash, Debug)]
 #[repr(transparent)]
+#[cfg_attr(feature="serialise", derive(Serialize,Deserialize))]
 pub struct Salt([u8; SALTSIZE]);
 
 impl Default for Salt

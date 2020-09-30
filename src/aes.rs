@@ -31,6 +31,7 @@ const BLOCKSIZE: usize = 16;
 /// A key and IV for the AES algorithm
 #[derive(Debug, PartialEq, Eq, Clone, Hash, Default)]
 #[cfg_attr(feature="serialise", derive(Serialize,Deserialize))]
+#[repr(align(1))]
 pub struct AesKey {
     key: [u8; KEYSIZE],
     iv: [u8; IVSIZE],
@@ -61,6 +62,30 @@ impl AesKey
     pub const fn new(key: [u8; KEYSIZE], iv: [u8; IVSIZE]) -> Self
     {
 	Self{key,iv}
+    }
+
+    /// Consume into the key and IV parts
+    pub const fn into_parts(self) -> ([u8; KEYSIZE], [u8; IVSIZE])
+    {
+        (self.key, self.iv)
+    }
+
+    /// Consume this instance into the full byte buffer
+    pub fn into_bytes(self) -> [u8; KEYSIZE+IVSIZE]
+    {
+        unsafe { std::mem::transmute(self) }
+    }
+
+    /// Consume a full byte buffer into an AES key
+    pub fn from_bytes(from: [u8; KEYSIZE+IVSIZE]) -> Self
+    {	
+        unsafe { std::mem::transmute(from) }
+    }
+
+    /// Create a zero inisialised key
+    #[inline] pub const fn empty() -> Self
+    {
+	Self { iv: [0; IVSIZE], key: [0; KEYSIZE]}
     }
 
     /// Create a new instance from slices
@@ -232,3 +257,26 @@ where F: io::Read + ?Sized,
 }
 
 pub use crate::error::aes::Error;
+
+#[cfg(test)]
+mod tests
+{
+    #[test]
+    fn transmute_safe()
+    {
+	use std::mem::{size_of, align_of};
+
+	assert_eq!(size_of::<super::AesKey>(), size_of::<[u8; super::KEYSIZE + super::IVSIZE]>());
+	assert_eq!(align_of::<super::AesKey>(), align_of::<[u8; super::KEYSIZE + super::IVSIZE]>());
+	let key = super::AesKey::generate().unwrap();
+
+	let bytes = Vec::from(key.as_ref());
+	let tbytes = key.clone().into_bytes();
+
+	let nkey = super::AesKey::from_bytes(tbytes);
+
+	assert_eq!(nkey, key);
+	assert_eq!(&bytes[..], &tbytes[..]);
+	assert_eq!(key.as_ref(), &tbytes[..]);
+    }
+}

@@ -151,14 +151,14 @@ where F: AsyncRead + Unpin + ?Sized,
     let mut crypt_buffer = [0u8; BUFFER_SIZE + BLOCKSIZE];
     while {read = from.read(&mut buffer[..]).await?; read!=0} {
 	let bytes_encrypted = crypter.update(&buffer[..read], &mut crypt_buffer)?;
-	to.write(&crypt_buffer[..bytes_encrypted]).await?;
-	done += read;
+	to.write_all(&crypt_buffer[..bytes_encrypted]).await?;
+	done += bytes_encrypted;
     }
 
     let bytes_encrypted = crypter.finalize(&mut crypt_buffer)?;
-    to.write(&crypt_buffer[..bytes_encrypted]).await?;
+    to.write_all(&crypt_buffer[..bytes_encrypted]).await?;
 
-    Ok(done)
+    Ok(done + bytes_encrypted)
 }
 
 /// Encrypt a stream into another using a key
@@ -174,14 +174,14 @@ where F: io::Read + ?Sized,
     let mut crypt_buffer = [0u8; BUFFER_SIZE + BLOCKSIZE];
     while {read = from.read(&mut buffer[..])?; read!=0} {
 	let bytes_encrypted = crypter.update(&buffer[..read], &mut crypt_buffer)?;
-	to.write(&crypt_buffer[..bytes_encrypted])?;
-	done += read;
+	to.write_all(&crypt_buffer[..bytes_encrypted])?;
+	done += bytes_encrypted;
     }
 
     let bytes_encrypted = crypter.finalize(&mut crypt_buffer)?;
-    to.write(&crypt_buffer[..bytes_encrypted])?;
+    to.write_all(&crypt_buffer[..bytes_encrypted])?;
 
-    Ok(done)
+    Ok(done + bytes_encrypted)
 }
 
 /// Decrypt a stream into another using a key
@@ -198,14 +198,14 @@ where F: AsyncRead + Unpin + ?Sized,
     let mut crypt_buffer = [0u8; BUFFER_SIZE + BLOCKSIZE];
     while {read = from.read(&mut buffer[..]).await?; read!=0} {
 	let bytes_encrypted = crypter.update(&buffer[..read], &mut crypt_buffer)?;
-	to.write(&crypt_buffer[..bytes_encrypted]).await?;
-	done += read;
+	to.write_all(&crypt_buffer[..bytes_encrypted]).await?;
+	done += bytes_encrypted;
     }
 
     let bytes_encrypted = crypter.finalize(&mut crypt_buffer)?;
-    to.write(&crypt_buffer[..bytes_encrypted]).await?;
+    to.write_all(&crypt_buffer[..bytes_encrypted]).await?;
 
-    Ok(done)
+    Ok(done + bytes_encrypted)
 }
 
 /// Decrypt a stream into another using a key
@@ -221,14 +221,14 @@ where F: io::Read + ?Sized,
     let mut crypt_buffer = [0u8; BUFFER_SIZE + BLOCKSIZE];
     while {read = from.read(&mut buffer[..])?; read!=0} {
 	let bytes_encrypted = crypter.update(&buffer[..read], &mut crypt_buffer)?;
-	to.write(&crypt_buffer[..bytes_encrypted])?;
-	done += read;
+	to.write_all(&crypt_buffer[..bytes_encrypted])?;
+	done += bytes_encrypted;
     }
 
     let bytes_encrypted = crypter.finalize(&mut crypt_buffer)?;
-    to.write(&crypt_buffer[..bytes_encrypted])?;
+    to.write_all(&crypt_buffer[..bytes_encrypted])?;
 
-    Ok(done)
+    Ok(done + bytes_encrypted)
 }
 
 pub use crate::error::aes::Error;

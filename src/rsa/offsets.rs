@@ -2,7 +2,6 @@
 use super::*;
 
 #[cfg_attr(feature="serialise", derive(Serialize,Deserialize))]
-
 pub struct Starts<T: HasOffsets>(T);
 
 pub trait HasOffsets: Sized

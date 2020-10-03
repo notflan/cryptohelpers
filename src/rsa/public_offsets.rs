@@ -1,7 +1,9 @@
 //! Offsets for a public key container
 use super::offsets::*;
+use super::*;
 
 #[derive(Clone,Copy,Debug,Eq,PartialEq,Hash,Default)]
+#[cfg_attr(feature="serialise", derive(Serialize,Deserialize))]
 pub struct PublicOffsetGroup
 {
     pub n: usize,

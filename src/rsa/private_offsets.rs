@@ -1,7 +1,9 @@
 //! Private offsets
 use super::offsets::*;
+use super::*;
 
 #[derive(Clone,Copy,Debug,Eq,PartialEq,Hash,Default)]
+#[cfg_attr(feature="serialise", derive(Serialize,Deserialize))]
 pub struct PrivateOffsetGroup
 {
     pub n: usize,

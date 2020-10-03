@@ -1,4 +1,7 @@
 //! Traits for offsets of components
+use super::*;
+
+#[cfg_attr(feature="serialise", derive(Serialize,Deserialize))]
 
 pub struct Starts<T: HasOffsets>(T);
 

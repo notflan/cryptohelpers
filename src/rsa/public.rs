@@ -47,6 +47,7 @@ use tokio::{
 /// It is always assumed that the internal consistancy and state of the components binary representations is correct.
 /// Incorrect internal state can cause panics on all operations.
 #[derive(Clone, PartialEq, Eq, Hash, Debug)]
+#[cfg_attr(feature="serialise", derive(Serialize,Deserialize))]
 pub struct RsaPublicKey
 {
     data: Vec<u8>,

@@ -158,7 +158,7 @@ impl RsaPrivateKey
     }
 
     /// Try to create an instance from PEM, requesting password if needed
-    pub fn from_pem<F>(&self, pem: impl AsRef<str>, pw: F) -> Result<Self, Error>
+    pub fn from_pem<F>(pem: impl AsRef<str>, pw: F) -> Result<Self, Error>
     where F: FnOnce() -> Option<Password>
     {
 	let pem = pem.as_ref().as_bytes();

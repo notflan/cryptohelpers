@@ -41,6 +41,106 @@ use consts::BUFFER_SIZE;
 #[repr(transparent)]
 pub struct Signature([u8; SIZE]);
 
+#[cfg(feature="serialise")] const _: () = {
+    use serde::{
+	Serialize,
+    };
+
+    impl Serialize for Signature
+    {
+	fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+	where
+            S: serde::ser::Serializer,
+	{
+            serializer.serialize_bytes(&self.0[..])
+	}
+    }
+
+    pub struct SignatureVisitor;
+
+    impl<'de> serde::de::Visitor<'de> for SignatureVisitor {
+	type Value = Signature;
+
+	fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+            formatter.write_str("an array of 512 bytes")
+	}
+
+	fn visit_bytes<E>(self, v: &[u8]) -> Result<Self::Value, E>
+	where E: serde::de::Error
+	{
+	    let mut output = [0u8; SIZE];
+	    if v.len() == output.len() {
+		unsafe {
+		    std::ptr::copy_nonoverlapping(&v[0] as *const u8, &mut output[0] as *mut u8, SIZE);
+		}
+		Ok(Signature(output))
+	    } else {
+		Err(E::custom(format!("Expected {} bytes, got {}", SIZE, v.len())))
+	    }
+	}
+	fn visit_seq<A>(self, mut seq: A) -> Result<Self::Value, A::Error> where
+	    A: serde::de::SeqAccess<'de>
+	{
+	    let mut bytes = [0u8; SIZE];
+	    let mut i=0usize;
+	    while let Some(byte) = seq.next_element()?
+	    {
+		bytes[i] = byte;
+		i+=1;
+		if i==SIZE {
+		    return Ok(Signature(bytes));
+		}
+	    }
+	    use serde::de::Error;
+	    Err(A::Error::custom(format!("Expected {} bytes, got {}", SIZE, i)))
+	}
+    }
+    impl<'de> serde::Deserialize<'de> for Signature {
+	fn deserialize<D>(deserializer: D) -> Result<Signature, D::Error>
+	where
+            D: serde::de::Deserializer<'de>,
+	{
+            deserializer.deserialize_bytes(SignatureVisitor)
+	}
+    }
+
+};
+
+
+#[cfg(feature="serialise")]
+#[cfg(test)]
+mod serde_tests
+{
+    
+    #[test]
+    fn ser_de()
+    {
+	let pv = super::RsaPrivateKey::generate().expect("genkey");
+	let mut data = [0u8; 32];
+	getrandom::getrandom(&mut data[..]).expect("rng");
+	
+	let signature = super::sign_slice(&data[..], &pv).expect("sign");
+	assert!(signature.verify_slice(&data[..], &pv).expect("verify"));
+
+	let value = serde_cbor::to_vec(&signature).expect("ser");
+	let output: super::Signature = serde_cbor::from_slice(&value[..]).expect("de");
+
+	assert_eq!(output, signature);
+
+	assert!(output.verify_slice(&data[..], &pv).expect("verify"));
+    }
+    #[test]
+    fn ser_de_empty()
+    {
+	let signature = super::Signature::default();
+
+	let value = serde_cbor::to_vec(&signature).expect("ser");
+	let output: super::Signature = serde_cbor::from_slice(&value[..]).expect("de");
+
+	assert_eq!(output, signature);
+    }
+}
+
 impl Signature
 {
     /// Create from an exact array

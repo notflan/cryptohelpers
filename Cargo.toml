@@ -1,6 +1,6 @@
 [package]
 name = "cryptohelpers"
-version = "1.5.1"
+version = "1.6.0"
 license= "MIT"
 description = "Collection of helpers and simplifying functions for cryptography things"
 authors = ["Avril <flanchan@cumallover.me>"]
@@ -41,3 +41,6 @@ password = ["sha256", "pbkdf2", "hex-literal", "hmac", "getrandom"]
 aes = ["openssl", "getrandom"]
 checksum = ["crc"]
 rsa = ["openssl", "password"]
+
+[dev-dependencies]
+serde_cbor = "0.11.1"

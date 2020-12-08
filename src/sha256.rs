@@ -135,6 +135,38 @@ where T: AsRef<[u8]>
     Sha256Hash{hash}
 }
 
+/// Compute a SHA256 hash from a stream of slices
+#[cfg(feature="async")]
+pub async fn compute_slices_stream<T, I>(mut from: I) -> Sha256Hash
+where I: futures::stream::Stream<Item=T> + std::marker::Unpin,
+      T: AsRef<[u8]>
+{
+    use futures::stream::StreamExt;
+    let mut hasher = Sha256::new();
+    while let Some(from) = from.next().await {
+	hasher.update(from.as_ref());
+    }
+
+    let mut hash = [0u8; SIZE];
+    bytes::copy_slice(&mut hash, &hasher.finalize());
+    Sha256Hash{hash}
+}
+
+/// Compute a SHA256 hash from a number of slices
+pub fn compute_slices<T, I>(from: I) -> Sha256Hash
+where I: IntoIterator<Item=T>,
+      T: AsRef<[u8]>
+{
+    let mut hasher = Sha256::new();
+    for from in from.into_iter() {
+	hasher.update(from.as_ref());
+    }
+
+    let mut hash = [0u8; SIZE];
+    bytes::copy_slice(&mut hash, &hasher.finalize());
+    Sha256Hash{hash}
+}
+
 
 /// Compute the SHA256 hash of the rest of this stream
 pub fn compute_sync<T>(from: &mut T) -> io::Result<Sha256Hash>

@@ -31,10 +31,14 @@ use serde_derive::{
 
 // Actual things
 
+#[cfg(feature="sha256")]
+pub use sha2;
 #[cfg(feature="sha256")] 
 pub mod sha256;
+
 #[cfg(feature="password")]
 pub mod password;
+
 #[cfg(feature="aes")]
 pub mod aes;
 #[cfg(feature="checksum")]

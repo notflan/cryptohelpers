@@ -122,6 +122,21 @@ where T: AsyncRead + Unpin + ?Sized
 }
 
 
+/// Compute SHA256 hash from an iterator of slices.
+pub fn compute_slice_iter<T, I>(from: I) -> Sha256Hash
+where T: AsRef<[u8]>,
+      I: IntoIterator<Item=T>
+{
+    let mut hasher = Sha256::new();
+    for from in from.into_iter()
+    {
+	hasher.update(from.as_ref());
+    }
+
+    let mut hash = [0u8; SIZE];
+    bytes::copy_slice(&mut hash, &hasher.finalize());
+    Sha256Hash{hash}
+}
 /// Compute SHA256 hash from a slice.
 pub fn compute_slice<T>(from: T) -> Sha256Hash
 where T: AsRef<[u8]>

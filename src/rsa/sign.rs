@@ -37,9 +37,17 @@ use consts::RSA_SIG_SIZE as SIZE;
 use consts::BUFFER_SIZE;
 
 /// Represents an RSA signature
-#[derive(Copy, Clone)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 #[repr(transparent)]
 pub struct Signature([u8; SIZE]);
+impl Default for Signature
+{
+    #[inline]
+    fn default() -> Self
+    {
+	Self([0u8; SIZE])
+    }
+}
 
 #[cfg(feature="serialise")] const _: () = {
     use serde::{
@@ -306,38 +314,6 @@ impl AsMut<[u8]> for Signature
     fn as_mut(&mut self) -> &mut [u8]
     {
 	&mut self.0[..]
-    }
-}
-
-impl Default for Signature
-{
-    #[inline]
-    fn default() -> Self
-    {
-	Self([0u8; SIZE])
-    }
-}
-
-impl Eq for Signature{}
-impl PartialEq for Signature
-{
-    #[inline] fn eq(&self, other: &Self) -> bool
-    {
-	&self.0[..] == &other.0[..]
-    }
-}
-
-impl Hash for Signature {
-    fn hash<H: Hasher>(&self, state: &mut H) {
-	self.0[..].hash(state)
-    }
-}
-
-impl Debug for Signature
-{
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
-    {
-	write!(f, "Signature ({:?})", &self.0[..])
     }
 }
 

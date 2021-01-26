@@ -29,7 +29,7 @@ use consts::BUFFER_SIZE;
 const BLOCKSIZE: usize = 16;
 
 /// A key and IV for the AES algorithm
-#[derive(Debug, PartialEq, Eq, Clone, Hash, Default)]
+#[derive(Debug, PartialEq, Eq, Clone, Hash, Default, PartialOrd, Ord)]
 #[cfg_attr(feature="serialise", derive(Serialize,Deserialize))]
 #[repr(align(1))]
 pub struct AesKey {

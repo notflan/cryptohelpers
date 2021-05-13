@@ -65,8 +65,8 @@ impl Sha256Hash
     }
     
     /// Reads the rest of the stream, and computes SHA256 hash into the current instance. Returning the number of bytes read.
-    pub fn compute_into_sync<T>(&mut self, from: &mut T) -> io::Result<usize>
-    where T: io::Read + Unpin + ?Sized
+    pub fn compute_into_sync<T>(&mut self, mut from: T) -> io::Result<usize>
+    where T: io::Read
     {
 	let mut buffer = [0u8; super::BUFFER_SIZE];
 	let mut hasher = Sha256::new();
@@ -184,8 +184,8 @@ where I: IntoIterator<Item=T>,
 
 
 /// Compute the SHA256 hash of the rest of this stream
-pub fn compute_sync<T>(from: &mut T) -> io::Result<Sha256Hash>
-where T: io::Read + Unpin + ?Sized
+pub fn compute_sync<T>(mut from: T) -> io::Result<Sha256Hash>
+where T: io::Read
 {
     let mut buffer = [0u8; super::BUFFER_SIZE];
     let mut hasher = Sha256::new();

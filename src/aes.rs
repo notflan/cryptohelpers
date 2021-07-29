@@ -187,7 +187,7 @@ where F: AsyncRead + Unpin + ?Sized,
 }
 
 /// Encrypt a stream into another using a key
-pub async fn encrypt_stream_sync<F,T>(key: &AesKey, from: &mut F, to: &mut T) -> Result<usize, Error>
+pub fn encrypt_stream_sync<F,T>(key: &AesKey, from: &mut F, to: &mut T) -> Result<usize, Error>
 where F: io::Read + ?Sized,
       T: io::Write + ?Sized
 {
@@ -234,7 +234,7 @@ where F: AsyncRead + Unpin + ?Sized,
 }
 
 /// Decrypt a stream into another using a key
-pub async fn decrypt_stream_sync<F,T>(key: &AesKey, from: &mut F, to: &mut T) -> Result<usize, Error>
+pub fn decrypt_stream_sync<F,T>(key: &AesKey, from: &mut F, to: &mut T) -> Result<usize, Error>
 where F: io::Read + ?Sized,
       T: io::Write + ?Sized
 {
@@ -254,6 +254,48 @@ where F: io::Read + ?Sized,
     to.write_all(&crypt_buffer[..bytes_encrypted])?;
 
     Ok(done + bytes_encrypted)
+}
+
+/// Decrypt a slice to a `Vec<u8>` async
+#[cfg(feature="async")] 
+pub async fn decrypt_slice(key: &AesKey, from: impl AsRef<[u8]>) -> Result<Vec<u8>, Error>
+{
+    let from = from.as_ref();
+    let mut to = Vec::with_capacity(from.len() + 128);
+    
+    decrypt_stream(key, &mut &from[..], &mut to).await?;
+    Ok(to)
+}
+
+/// Decrypt a slice to a `Vec<u8>` sync
+pub fn decrypt_slice_sync(key: &AesKey, from: impl AsRef<[u8]>) -> Result<Vec<u8>, Error>
+{
+    let from = from.as_ref();
+    let mut to = Vec::with_capacity(from.len() + 128);
+    
+    decrypt_stream_sync(key, &mut &from[..], &mut to)?;
+    Ok(to)
+}
+
+/// Encrypt a slice to a `Vec<u8>` async
+#[cfg(feature="async")] 
+pub async fn encrypt_slice(key: &AesKey, from: impl AsRef<[u8]>) -> Result<Vec<u8>, Error>
+{
+    let from = from.as_ref();
+    let mut to = Vec::with_capacity(from.len() + 128);
+    
+    encrypt_stream(key, &mut &from[..], &mut to).await?;
+    Ok(to)
+}
+
+/// Encrypt a slice to a `Vec<u8>` sync
+pub fn encrypt_slice_sync(key: &AesKey, from: impl AsRef<[u8]>) -> Result<Vec<u8>, Error>
+{
+    let from = from.as_ref();
+    let mut to = Vec::with_capacity(from.len() + 128);
+    
+    encrypt_stream_sync(key, &mut &from[..], &mut to)?;
+    Ok(to)
 }
 
 pub use crate::error::aes::Error;

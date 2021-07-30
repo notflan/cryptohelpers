@@ -107,7 +107,8 @@ where T: Read + ?Sized,
     let mut done=0;
     while {read = data.read(&mut read_buffer[..])?; read!=0} {
 	done+=read;
-	read = key.public_encrypt(&read_buffer[..read], &mut crypt_buffer[..], PADDING).map_err(|_| Error::Encrypt)?;
+	read = key.public_encrypt(&read_buffer[..read], &mut crypt_buffer[..], PADDING).map_err(|ssl| {eprintln!("SSL err: {}", ssl); Error::Encrypt})?;
+
 	output.write_all(&crypt_buffer[..read])?;
     }
     
@@ -125,7 +126,7 @@ where T: AsRef<[u8]>,
 
     let mut crypt_buffer = vec![0u8; key_size];
 
-    let read = key.public_encrypt(data.as_ref(), &mut crypt_buffer[..], PADDING).map_err(|_| Error::Encrypt)?;
+    let read = key.public_encrypt(data.as_ref(), &mut crypt_buffer[..], PADDING).map_err(|ssl| {eprintln!("SSL err: {}", ssl); Error::Encrypt})?;
     output.write_all(&crypt_buffer[..read])?;
 
     Ok(read)

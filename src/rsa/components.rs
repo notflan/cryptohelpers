@@ -27,7 +27,7 @@ pub trait HasPublicComponents: HasComponents
     /// This can panic if the internal state of the instance is incorrect
     #[inline] fn num_e(&self) -> BigNum
     {
-	BigNum::from_slice(self.n()).unwrap()
+	BigNum::from_slice(self.e()).unwrap()
     }
 }
 

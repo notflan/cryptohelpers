@@ -1,5 +1,6 @@
 //! RSA related thingies
 use super::*;
+use std::fmt;
 pub use openssl;
 
 use consts::RSA_PADDING as PADDING;

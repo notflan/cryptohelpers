@@ -59,6 +59,14 @@ pub struct RsaPrivateKey
     offset: PrivateOffsetGroup,
 }
 
+impl fmt::Display for RsaPrivateKey
+{
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result
+    {
+	write!(f, "{}", base64::encode(&self.data[..]))
+    }
+}
+
 impl RsaPrivateKey
 {
     /// Generate a new RSA private key

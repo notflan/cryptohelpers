@@ -27,11 +27,9 @@ use openssl::{
     },
 };
 #[cfg(feature="async")] 
-use tokio::{
-    io::{
-	AsyncRead,
-    },
-    prelude::*,
+use tokio::io::{
+    AsyncRead,
+    AsyncReadExt,
 };
 use consts::RSA_SIG_SIZE as SIZE;
 use consts::BUFFER_SIZE;

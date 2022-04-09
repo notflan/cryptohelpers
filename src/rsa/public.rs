@@ -33,12 +33,11 @@ use openssl::{
     },
 };
 #[cfg(feature="async")]
-use tokio::{
-    io::{
-	AsyncWrite,
-	AsyncRead,
-    },
-    prelude::*,
+use tokio::io::{
+    AsyncWrite,
+    AsyncWriteExt,
+    AsyncRead,
+    AsyncReadExt,
 };
 
 /// Container for RSA public key components

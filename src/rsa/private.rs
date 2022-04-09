@@ -37,12 +37,11 @@ use openssl::{
     symm::Cipher,
 };
 #[cfg(feature="async")] 
-use tokio::{
-    io::{
-	AsyncWrite,
-	AsyncRead,
-    },
-    prelude::*,
+use tokio::io::{
+    AsyncWrite,
+    AsyncWriteExt,
+    AsyncRead,
+    AsyncReadExt,
 };
 
 /// Container for the private & public parts of an RSA key

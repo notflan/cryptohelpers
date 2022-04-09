@@ -13,12 +13,11 @@ use openssl::{
     pkey::HasPrivate,
 };
 #[cfg(feature="async")]
-use tokio::{
-    io::{
-	AsyncWrite,
-	AsyncRead,
-    },
-    prelude::*,
+use tokio::io::{
+    AsyncWrite,
+    AsyncWriteExt,
+    AsyncRead,
+    AsyncReadExt,
 };
 
 use consts::RSA_PADDING_NEEDS as PADDING_NEEDS;

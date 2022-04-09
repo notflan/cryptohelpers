@@ -14,12 +14,11 @@ use openssl::{
     },
 };
 #[cfg(feature="async")]
-use tokio::{
-    io::{
-	AsyncRead,
-	AsyncWrite,
-    },
-    prelude::*,
+use tokio::io::{
+    AsyncRead,
+    AsyncReadExt,
+    AsyncWrite,
+    AsyncWriteExt,
 };
 use getrandom::getrandom;
 

@@ -10,9 +10,9 @@ use sha2::{
     Digest, Sha256,
 };
 #[cfg(feature="async")] 
-use tokio::{
-    io::AsyncRead,
-    prelude::*,
+use tokio::io::{
+    AsyncRead,
+    AsyncReadExt,
 };
 
 pub const SIZE: usize = consts::SHA256_SIZE;

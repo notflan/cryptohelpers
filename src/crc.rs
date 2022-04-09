@@ -11,9 +11,9 @@ use crc::{
     Hasher64,
 };
 #[cfg(feature="async")]
-use tokio::{
-    prelude::*,
-    io::AsyncRead,
+use tokio::io::{
+    AsyncRead,
+    AsyncReadExt,
 };
 use consts::BUFFER_SIZE;
 

@@ -2,6 +2,8 @@
 name = "cryptohelpers"
 version = "2.0.0"
 license= "MIT"
+homepage="https://git.flanchan.moe/flanchan/cryptohelpers"
+repository="https://github.com/notflan/cryptohelpers"
 description = "Collection of helpers and simplifying functions for cryptography things"
 authors = ["Avril <flanchan@cumallover.me>"]
 edition = "2018"
